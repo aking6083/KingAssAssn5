@@ -1,4 +1,4 @@
-Enter file contents here#include "stdafx.h"
+#include "stdafx.h"
 #include <iostream>
 
 using namespace std;
