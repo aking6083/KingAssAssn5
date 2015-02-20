@@ -13,35 +13,10 @@ struct BstNode {
 
 };
 
-//Creates the node for the tree
-
-
-/*int nodeLevel (btNode* binRoot, btNode* node)
-{
-	int depth = 0;
-	
-	while (node != binRoot)
-	{
-		//node = node->parent;
-		depth++;
-	}
-	return depth;
-}
-*/
-
-bool isExternal(BstNode* node)
-{
-	bool isXternal = false;
-	
-	//External means no kids.
-	if (node != NULL)
-	{
-		if ((node->left == NULL) && (node->right == NULL ))
-			isXternal = true;
-	}
-	return isXternal;
-}
-
+struct BsTree {
+	BstNode* root;
+	int count;
+};
 //Traverse list in pre-order
 void PreOrder (BstNode* subTree)
 {
@@ -65,7 +40,7 @@ void PostOrder (BstNode* subTree)
 		cout << subTree->data << endl;
 	}
 }
-BstNode* GetNewNode(int data)
+BstNode* CreateNode(int data)
 {
 	BstNode* newNode = new BstNode();
 	newNode->data = data;
@@ -74,48 +49,88 @@ BstNode* GetNewNode(int data)
 
 }
 
+BsTree * CreateTree()
+{
+	BsTree* newTree = new (nothrow) BsTree;
+	if (newTree)
+	{
+		newTree->root = NULL;
+		newTree->count = 0;
+	}
+	return newTree;
+}
 
 BstNode* Insert(BstNode* rootPtr, int data)
 {
 	if (!rootPtr)
 	{
-		rootPtr = GetNewNode(data);
+		rootPtr = CreateNode(data);
+		
 	}
 	else if (data < rootPtr->data) 
 	{
 		rootPtr->left = Insert(rootPtr->left,data);
+		
 	}
 	else 
 	{
 		rootPtr->right = Insert(rootPtr->right,data);
+		
 	}
 	return rootPtr;
 }
 
 int main(int argc, char* argv[])
 {
+	BsTree* myTree = CreateTree();
 	BstNode* root = NULL;
 	root = Insert(root,76);
-	root = Insert(root,46);
-	root = Insert(root,26);
-	root = Insert(root,54);
-	root = Insert(root,34);
-	root = Insert(root, 99);
-	root = Insert(root, 230);
-	root = Insert (root, 1);
-	root = Insert(root,41);
-	root = Insert(root,32);
-	root = Insert(root,34);
-	root = Insert(root, 74);
-	root = Insert(root, 94);
-	root = Insert (root, 15);
+	myTree->count++;
 	
+	root = Insert(root,46);
+	myTree->count++;
+	
+	root = Insert(root,26);
+	myTree->count++;
+	
+	root = Insert(root,54);
+	myTree->count++;
+	
+	root = Insert(root,34);
+	myTree->count++;
+	
+	root = Insert(root, 99);
+	myTree->count++;
 
+	root = Insert(root, 230);
+	myTree->count++;
 
-	PreOrder(root);
+	root = Insert (root, 1);
+	myTree->count++;
+
+	root = Insert(root,41);
+	myTree->count++;
+	
+	root = Insert(root,32);
+	myTree->count++;
+
+	root = Insert(root,34);
+	myTree->count++;
+
+	root = Insert(root, 74);
+	myTree->count++;
+
+	root = Insert(root, 94);
+	myTree->count++;
+	
+	root = Insert (root, 15);
+	myTree->root = root;
+	
+	PreOrder(myTree->root);
 	cout << endl;
-	PostOrder(root);
+	PostOrder(myTree->root);
 	return 0;
 }
+
 
 
