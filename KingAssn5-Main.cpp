@@ -19,6 +19,16 @@ struct BsTree {
 	int count;
 };
 
+bool isEmpty(BsTree* myTree)
+{
+	bool isEmpty = false;
+
+	if (myTree->root == NULL)
+		isEmpty = true;
+
+	return isEmpty;
+}
+
 //Traverse list in sorted order
 void InOrderDisplay(BstNode* myTree)
 {
@@ -27,7 +37,6 @@ void InOrderDisplay(BstNode* myTree)
 		InOrderDisplay(myTree->left);
 		cout << myTree->data << endl;
 		InOrderDisplay(myTree->right);
-
 	}
 }
 
@@ -89,15 +98,7 @@ BstNode* InsertNode(BstNode* rootPtr, int data)
 	}
 	return rootPtr;
 }
-bool isEmpty(BsTree* myTree)
-{
-	bool isEmpty = false;
 
-	if (myTree->root == NULL)
-		isEmpty = true;
-
-	return isEmpty;
-}
 BstNode * FindNode(int data, BstNode* myTree, bool& found)
 {
 	if (myTree == NULL)
@@ -127,35 +128,35 @@ BstNode * FindNode(int data, BstNode* myTree, bool& found)
 
 }
 
-void DeleteFromTree(BsTree* &myTree)  //Change to node.
+void DeleteFromTree(BstNode* &myTree)  //Change to node.
 {
 	BstNode* current;
 	BstNode* trailCurrent;
 	BstNode* temp;
 
-	if (myTree->root == NULL)
+	if (myTree == NULL)
 		cout << "Node delete error\n";
-	else if (myTree->root->left == NULL && myTree->root->right == NULL)
+	else if (myTree->left == NULL && myTree->right == NULL)
 	{
-		temp = myTree->root;
+		temp = myTree;
 		myTree = NULL;
 		delete temp;
 	}
-	else if (myTree->root->left == NULL)
+	else if (myTree->left == NULL)
 	{
-		temp = myTree->root;
-		myTree->root->right = temp->right;  //Move it around
+		temp = myTree;
+		myTree = temp->right;  //Move it around
 		delete temp;
 	}
-	else if (myTree->root->right == NULL)
+	else if (myTree->right == NULL)
 	{
-		temp = myTree->root;
-		myTree->root = temp->left;  //Move it around.
+		temp = myTree;
+		myTree = temp->left;  //Move it around.
 		delete temp;
 	}
 	else
 	{
-		current = myTree->root->left;
+		current = myTree->left;
 		trailCurrent = NULL;
 
 		while (current->right != NULL)
@@ -163,16 +164,15 @@ void DeleteFromTree(BsTree* &myTree)  //Change to node.
 			trailCurrent = current;
 			current = current->right;
 		}
-		myTree->root->data = current->data;
+		myTree->data = current->data;
 
 		if (trailCurrent == NULL) //No movement
-			myTree->root->left = current->left;
+			myTree->left = current->left;
 		else
 			trailCurrent->right = current->right;
 
 		delete current;
 	}
-
 }
 
 
@@ -203,16 +203,44 @@ void DeleteNode(int dataToDel, BsTree* &myTree)
 					current = current->right;
 			}
 		}
-		if (current == NULL)
+		if (current == NULL && dataToDel != 0)
 			cout << dataToDel << " is not in the tree\n";
 		else if (found)
 		{
 			if (current == myTree->root)
-				DeleteFromTree();
+				DeleteFromTree(myTree->root);
 			else if (trailCurrent->data > dataToDel)
+				DeleteFromTree(trailCurrent->left);
+			else
+				DeleteFromTree(trailCurrent->right);
 		}
 	}
 }
+
+void FreeNodes(BsTree* &myTree)
+{
+	if (!isEmpty(myTree))
+	{
+		DeleteFromTree(myTree->root);
+		FreeNodes(myTree);
+	}
+}
+
+void DestroyTree(BsTree* &myTree)
+{
+	if (isEmpty(myTree))
+	{
+		myTree->root = NULL;
+		myTree->count = 0;
+		delete myTree;
+	}
+	else
+	{
+		FreeNodes(myTree);
+		delete myTree;
+	}
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -248,63 +276,17 @@ int main(int argc, char* argv[])
 
 	InOrderDisplay(myTree->root);
 
-	DeleteNode(tmpNode);
-
+	DeleteNode(0,myTree);
+	cout << endl << endl << endl;
+	
 	InOrderDisplay(myTree->root);
-
+	
+	
+	DestroyTree(myTree);
+	InOrderDisplay(myTree->root);
 
 	return 0;
 }
 
-/*
-void DeleteFromTree(BsTree* &myTree)
-{
-BstNode* current;
-BstNode* trailCurrent;
-BstNode* temp;
 
-if (myTree->root == NULL)
-cout << "Node delete error\n";
-else if (myTree->root->left == NULL && myTree->root->right == NULL)
-{
-temp = myTree->root;
-myTree = NULL;
-delete temp;
-}
-else if (myTree->root->left == NULL)
-{
-temp = myTree->root;
-myTree->root->right = temp->right;  //Move it around
-delete temp;
-}
-else if (myTree->root->right == NULL)
-{
-temp = myTree->root;
-myTree->root = temp->left;  //Move it around.
-delete temp;
-}
-else
-{
-current = myTree->root->left;
-trailCurrent = NULL;
-
-while (current->right != NULL)
-{
-trailCurrent = current;
-current = current->right;
-}
-myTree->root->data = current->data;
-
-if (trailCurrent == NULL) //No movement
-myTree->root->left = current->left;
-else
-trailCurrent->right = current->right;
-
-delete current;
-}
-
-}
-
-
-*/
 
