@@ -1,9 +1,21 @@
 #include "stdafx.h"
 #include <iostream>
-
+#include <fstream>
+#include <iomanip>
+#include <string>
 using namespace std;
 
-const int treeData[10] = { 20, 65, 43, 87, 10, 45, 76, 23, 87, 55 };
+const int NUM_CHOICES = 5;
+enum MENU_CHOICE {SHOW,ADD,DELETE,FIND,EXIT);
+const char CHAR_CHOICES[NUM_CHOICES] = {'S','A','D','F','E');
+const char STRING_CHOICES = {"Show Nodes","Add Nodes", "Delete Nodes",
+							 "Find Nodes","Exit Program");
+
+const string MENU_HDR = "=========================================================="
+				    "=====================\n"
+					"Kings Binary Trees Menu"
+					"=========================================================="
+				    "=====================\n";
 //Binary Tree Node
 
 struct BstNode {
@@ -241,50 +253,73 @@ void DestroyTree(BsTree* &myTree)
 	}
 }
 
+string getFile()
+{
+	//Fix this shit
+	ifstream inStream;
+
+	bool isValid = false;
+	string userInput;
+
+	while (!isValid)
+	{
+    	cin.clear();
+		cout << "Please input file name of file to be read: ";
+		cin >> userInput;
+		inStream.open(userInput.c_str());
+		
+		if (inStream)
+			isValid = true;
+		else
+		{			
+			cout << "\nFile Not Found\n";
+			isValid = false;
+			
+		}
+	}
+	return userInput;
+}
+
+void ProcessFile(string fileName, BsTree* &myTree)
+{
+	BstNode* srchNode = NULL;
+
+	int numRead = 0;
+	ifstream inStream;
+	inStream.open(fileName.c_str());
+	inStream >> numRead;
+	bool nodeFound = false;
+
+	do 
+	{
+		srchNode = FindNode(numRead,myTree->root,nodeFound);
+		if (nodeFound)
+			cout << numRead << " found in tree, " << numRead << " will be ignored.\n";
+		else
+		{
+			myTree->root = InsertNode(myTree->root,numRead);
+			myTree->count++;
+		}
+			
+
+	}while(inStream >> numRead);
+	
+}
+
+
+
 
 int main(int argc, char* argv[])
 {
+	string fileName;
+	ifstream inStream;
 	BsTree* myTree = CreateTree();
-	BstNode* root = NULL;
-	BstNode* tmpNode = NULL;
-	bool isNodeFound = false;
-
-	root = InsertNode(root, 50);
-	myTree->count++;
-
-	root = InsertNode(root, 10);
-	myTree->count++;
-
-	root = InsertNode(root, 60);
-	myTree->count++;
-
-	root = InsertNode(root, 40);
-	myTree->count++;
-
-	root = InsertNode(root, 70);
-	myTree->count++;
-
-	root = InsertNode(root, 20);
-	myTree->count++;
-
-	root = InsertNode(root, 90);
-	myTree->count++;
-
-	myTree->root = root;
-
-	tmpNode = FindNode(40, myTree->root, isNodeFound);
-
-	InOrderDisplay(myTree->root);
-
-	DeleteNode(0,myTree);
-	cout << endl << endl << endl;
+	fileName = getFile();
+	ProcessFile(fileName,myTree);
 	
 	InOrderDisplay(myTree->root);
+	cout << myTree->count << endl;
 	
-	
-	DestroyTree(myTree);
-	InOrderDisplay(myTree->root);
-
 	return 0;
 }
 
