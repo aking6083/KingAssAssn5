@@ -3,20 +3,23 @@
 #include <fstream>
 #include <iomanip>
 #include <string>
+#include <cstddef>
 using namespace std;
 
+const int EMPTY_FILE = -99;
 const int NUM_CHOICES = 5;
-enum MENU_CHOICE {SHOW,ADD,DELETE,FIND,EXIT);
-const char CHAR_CHOICES[NUM_CHOICES] = {'S','A','D','F','E');
-const char STRING_CHOICES = {"Show Nodes","Add Nodes", "Delete Nodes",
-							 "Find Nodes","Exit Program");
+enum MENU_CHOICE { SHOW, ADD, DELETE, FIND, EXIT };
+const char CHAR_CHOICES[NUM_CHOICES] = { 'S', 'A', 'D', 'F', 'E' };
+const string STRING_CHOICES[NUM_CHOICES] = { "Show Nodes", "Add Nodes", "Delete Nodes",
+							"Find Nodes", "Exit Program" };
 
-const string MENU_HDR = "=========================================================="
-				    "=====================\n"
-					"Kings Binary Trees Menu"
-					"=========================================================="
-				    "=====================\n";
-//Binary Tree Node
+const string MENU_HDR = "\n=========================================================="
+	"=====================\n"
+	"                           Kings Binary Trees\n"
+	"                                 Main Menu\n"
+	"=========================================================="
+	"=====================\n";
+	//Binary Tree Node
 
 struct BstNode {
 	int data;
@@ -42,14 +45,20 @@ bool isEmpty(BsTree* myTree)
 }
 
 //Traverse list in sorted order
-void InOrderDisplay(BstNode* myTree)
+void InOrderDisplay(BstNode* myTree, int& numItems)
 {
+	
 	if (myTree != NULL)
 	{
-		InOrderDisplay(myTree->left);
-		cout << myTree->data << endl;
-		InOrderDisplay(myTree->right);
+		
+		InOrderDisplay(myTree->left, numItems);
+		cout << setw(6) << myTree->data << " ";
+		numItems++;
+		if (numItems%10 == 0)
+			cout << endl;
+		InOrderDisplay(myTree->right, numItems);
 	}
+
 }
 
 //Traverse list in pre-order
@@ -76,9 +85,17 @@ void PostOrder(BstNode* subTree)
 BstNode* CreateNode(int data)
 {
 	BstNode* newNode = new BstNode();
-	newNode->data = data;
-	newNode->parent = NULL;
-	newNode->left = newNode->right = NULL;
+	if (newNode != NULL)
+	{
+		newNode->data = data;
+		newNode->parent = NULL;
+		newNode->left = newNode->right = NULL;
+	}
+	else
+	{
+		cout << "Memory Allocation Error\n";
+		newNode = NULL;
+	}
 	return newNode;
 
 }
@@ -110,7 +127,6 @@ BstNode* InsertNode(BstNode* rootPtr, int data)
 	}
 	return rootPtr;
 }
-
 BstNode * FindNode(int data, BstNode* myTree, bool& found)
 {
 	if (myTree == NULL)
@@ -139,7 +155,6 @@ BstNode * FindNode(int data, BstNode* myTree, bool& found)
 	}
 
 }
-
 void DeleteFromTree(BstNode* &myTree)  //Change to node.
 {
 	BstNode* current;
@@ -186,8 +201,6 @@ void DeleteFromTree(BstNode* &myTree)  //Change to node.
 		delete current;
 	}
 }
-
-
 void DeleteNode(int dataToDel, BsTree* &myTree)
 {
 	BstNode* current = NULL;
@@ -228,7 +241,6 @@ void DeleteNode(int dataToDel, BsTree* &myTree)
 		}
 	}
 }
-
 void FreeNodes(BsTree* &myTree)
 {
 	if (!isEmpty(myTree))
@@ -237,7 +249,6 @@ void FreeNodes(BsTree* &myTree)
 		FreeNodes(myTree);
 	}
 }
-
 void DestroyTree(BsTree* &myTree)
 {
 	if (isEmpty(myTree))
@@ -248,11 +259,9 @@ void DestroyTree(BsTree* &myTree)
 	}
 	else
 	{
-		FreeNodes(myTree);
-		delete myTree;
+		cout << "\nPlease free the nodes before destroying the tree!\n";
 	}
 }
-
 string getFile()
 {
 	//Fix this shit
@@ -263,49 +272,179 @@ string getFile()
 
 	while (!isValid)
 	{
-    	cin.clear();
+		cin.clear();
 		cout << "Please input file name of file to be read: ";
 		cin >> userInput;
 		inStream.open(userInput.c_str());
-		
+
 		if (inStream)
 			isValid = true;
 		else
-		{			
+		{
 			cout << "\nFile Not Found\n";
 			isValid = false;
-			
+
 		}
 	}
 	return userInput;
 }
-
 void ProcessFile(string fileName, BsTree* &myTree)
 {
 	BstNode* srchNode = NULL;
 
-	int numRead = 0;
+	int numRead = EMPTY_FILE;
 	ifstream inStream;
 	inStream.open(fileName.c_str());
 	inStream >> numRead;
 	bool nodeFound = false;
-
-	do 
+	if (numRead != EMPTY_FILE)
 	{
-		srchNode = FindNode(numRead,myTree->root,nodeFound);
-		if (nodeFound)
-			cout << numRead << " found in tree, " << numRead << " will be ignored.\n";
-		else
+		do
 		{
-			myTree->root = InsertNode(myTree->root,numRead);
-			myTree->count++;
-		}
-			
+			srchNode = FindNode(numRead, myTree->root, nodeFound);
+			if (nodeFound)
+				cout << numRead << " found in tree, " << numRead << " will be ignored.\n";
+			else
+			{
+				myTree->root = InsertNode(myTree->root, numRead);
+				myTree->count++;
+			}
 
-	}while(inStream >> numRead);
-	
+
+		} while (inStream >> numRead);
+	}
 }
 
+bool isValid(char userInput, MENU_CHOICE* myChoice)
+{
+	bool valid = false;
+	for (int a = 0; a <= NUM_CHOICES - 1; a++)
+	{
+		if (userInput == CHAR_CHOICES[a])
+		{
+			valid = true;
+			*myChoice = static_cast<MENU_CHOICE>(a);
+		}
+			
+	}
+	if (!valid)
+		cout << "Please make a valid selection\n";
+	return valid;
+}
+MENU_CHOICE getMenuChoice()
+{
+	char userInput;
+	MENU_CHOICE myChoice = EXIT;
+	do
+	{
+		cout << "Please make a selection: ";
+		cin >> userInput;
+		userInput = toupper(userInput);
+	}while (!isValid(userInput,&myChoice));
+	
+	return myChoice;
+}
+void ShowMenu(int numNodes)
+{
+	MENU_CHOICE myChoice = EXIT;
+	cout << endl << setw(28) << numNodes << " total nodes in tree\n";
+	cout << setw(0) << MENU_HDR;
+	
+	for (int a = 0; a <= NUM_CHOICES - 1; a++)
+		cout << setw(30) << CHAR_CHOICES[a] << "->" << STRING_CHOICES[a] << endl;
+}
+
+void showTree(BsTree* myTree)
+{
+	if (!isEmpty(myTree))
+	{
+		int numCols = 0;
+		cout << "\nValues Stored in entire binary tree are:\n";
+		InOrderDisplay(myTree->root, numCols);
+		cout << endl;
+	}
+	else
+		cout << "\nTree is empty\n";
+}
+
+int getNumToMod()
+{
+	int userInput = 0;
+	bool valid = false;
+	while (!valid)
+	{
+		cout << "Please enter positive integer: ";
+		cin >> userInput;
+		if (userInput >= 0)
+			valid = true;
+		else
+			cout << "\nPlease enter an POSITIVE integer\n";
+	}
+	
+	return userInput;
+}
+
+void processChoice(MENU_CHOICE myChoice,BsTree* &myTree)
+{
+	BstNode* tmpNode = NULL;
+	int numToAdd = 0;
+	int numToDel = 0;
+	int numToFind = 0;
+	int numItems = 0; //For InOrderDisplay recursive funciton.
+	bool numFound = false;
+
+	switch (myChoice)
+	{
+	case SHOW:
+		showTree(myTree);
+		
+		break;
+	case ADD:
+		numToAdd = getNumToMod();
+		FindNode(numToAdd, myTree->root, numFound); 
+		if (!numFound)
+		{
+			myTree->root = InsertNode(myTree->root, numToAdd);
+			myTree->count++;
+			cout << numToAdd << " Added to binary tree\n";
+		}
+		else
+			cout << endl << numToAdd << " already in binary tree ignoring input\n";
+		break;
+
+	case DELETE:
+		numToDel = getNumToMod();
+		FindNode(numToDel, myTree->root, numFound);
+		if (numFound)
+		{
+			DeleteNode(numToDel, myTree);
+			myTree->count--;
+		}
+		else
+		{
+			cout << "\nCant delete " << numToDel << ", its not found in binary tree!\n";
+		}
+		break;
+
+	case FIND:
+		numToFind = getNumToMod();
+		tmpNode = FindNode(numToFind, myTree->root, numFound);
+		if (numFound)
+		{
+			cout << "\nValues stored in subtree with  " << numToFind  << " as root " << endl;
+			InOrderDisplay(tmpNode, numItems);
+
+		}
+		break;
+		
+	case EXIT:
+		FreeNodes(myTree);
+		DestroyTree(myTree);
+		cout << "Good-Bye\n";
+		break;
+	}
+
+}
 
 
 
@@ -314,14 +453,16 @@ int main(int argc, char* argv[])
 	string fileName;
 	ifstream inStream;
 	BsTree* myTree = CreateTree();
+	MENU_CHOICE myChoice = EXIT;
+	//fileName = "Text.txt";
 	fileName = getFile();
-	ProcessFile(fileName,myTree);
-	
-	InOrderDisplay(myTree->root);
-	cout << myTree->count << endl;
-	
+	ProcessFile(fileName, myTree);
+	do {
+		ShowMenu(myTree->count);
+		myChoice = getMenuChoice();
+		processChoice(myChoice, myTree);
+	} while (myChoice != EXIT);
 	return 0;
 }
-
 
 
