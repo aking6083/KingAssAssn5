@@ -1,20 +1,20 @@
 /*****************************************************************************
 // CODE FILENAME: KingAssn5.cpp
 //	DESCRIPTION: Program to test binary tree structure.  Tree structure is loaded
-//				from text file input by user.  The input text file will be space 
-//				delimted integers less than or equal to 9999.  User will be 
-//				presented with a menu of actions to perform on tree.  
+//				from text file input by user.  The input text file will be space
+//				delimted integers less than or equal to 9999.  User will be
+//				presented with a menu of actions to perform on tree.
 //				MENU:
 //				S->Show Tree ~ will show the entire binary tree formatted.
 //				A->Add Nodes ~ will add a user proivded node to tree
 //				D->Delete Nodes ~ will delete user provided node from tree
-//				F->Find Nodes ~ Finds and shows the tree associated with user 
+//				F->Find Nodes ~ Finds and shows the tree associated with user
 //								provided integer.
 //	CLASS/TERM: CS372/SP8W1
 //	DESIGNER: Adam King
 //	FUNCTIONS: bool isEmpty(BsTree* myTree);
-//	//Displays formatted sorted binary tree		
-//	void InOrderDisplay(BstNode* myTree, int& numItems); 
+//	//Displays formatted sorted binary tree
+//	void InOrderDisplay(BstNode* myTree, int& numItems);
 //	BstNode* CreateNode(int data); ~Creates a node to add to binary tree
 //	BsTree * CreateTree(); ~Creates the tree
 //	BstNode* InsertNode(BstNode* rootPtr, int data); ~Inserts node to tree
@@ -47,19 +47,19 @@ const int EMPTY_FILE = -99; //File Empty Error code
 const int NUM_CHOICES = 5; //Number of choice available to user
 enum MENU_CHOICE { SHOW, ADD, DELETE, FIND, EXIT }; //enum of menu choices
 //char array of menu choices
-const char CHAR_CHOICES[NUM_CHOICES] = { 'S', 'A', 'D', 'F', 'E' }; 
+const char CHAR_CHOICES[NUM_CHOICES] = { 'S', 'A', 'D', 'F', 'E' };
 //string array of menu choices
 const string STRING_CHOICES[NUM_CHOICES] = { "Show Nodes", "Add Nodes", "Delete Nodes",
-							"Find Nodes", "Exit Program" };
+"Find Nodes", "Exit Program" };
 
 //Menu Header
 const string MENU_HDR = "\n=========================================================="
-	"=====================\n"
-	"                           Kings Binary Trees\n"
-	"                                 Main Menu\n"
-	"=========================================================="
-	"=====================\n";
-	
+"=====================\n"
+"                           Kings Binary Trees\n"
+"                                 Main Menu\n"
+"=========================================================="
+"=====================\n";
+
 //Binary Tree Node
 struct BstNode {
 	int data;
@@ -94,7 +94,7 @@ MENU_CHOICE getMenuChoice();
 void ShowMenu(int numNodes);
 void showTree(BsTree* myTree);
 int getNumToMod();
-void processChoice(MENU_CHOICE myChoice,BsTree* &myTree);
+void processChoice(MENU_CHOICE myChoice, BsTree* &myTree);
 
 //*****************************************************************************
 // FUNCTION: main
@@ -142,7 +142,7 @@ void InOrderDisplay(BstNode* myTree, int& numItems)
 		InOrderDisplay(myTree->left, numItems); //Show lower 
 		cout << setw(6) << myTree->data << " ";
 		numItems++;
-		if (numItems%10 == 0)//Column formatting
+		if (numItems % 10 == 0)//Column formatting
 			cout << endl;
 		InOrderDisplay(myTree->right, numItems); //Show upper
 	}
@@ -324,7 +324,7 @@ void DeleteFromTree(BstNode* &myTree)  //Change to node.
 }
 //*****************************************************************************
 // FUNCTION: DeleteNode
-// DESCRIPTION: ~Searches and deletes node from root
+// DESCRIPTION: ~Searches and deletes node from tree
 // INPUT:
 // Parameters: int dataToDel ~ data to be removed from tree
 //			   BsTree* &myTree ~ Binary Search Tree
@@ -346,7 +346,10 @@ void DeleteNode(int dataToDel, BsTree* &myTree)
 	{
 		current = myTree->root;
 		trailCurrent = myTree->root;
-
+		//Search through tree looking for data
+		//SideNote: Could I have replaced this with my FindNode function then
+		//passing the found node to DeleteFromTree()?? I'm sure I can but ran
+		//out of time to code it and test it.
 		while (current != NULL && !found)
 		{
 			if (current->data == dataToDel)
@@ -365,50 +368,41 @@ void DeleteNode(int dataToDel, BsTree* &myTree)
 			cout << dataToDel << " is not in the tree\n";
 		else if (found)
 		{
-			if (current == myTree->root) //Is it here
+			if (current == myTree->root) //Is it here?
 				DeleteFromTree(myTree->root);
-			else if (trailCurrent->data > dataToDel) //Is it here
+			else if (trailCurrent->data > dataToDel) //Is it here?
 				DeleteFromTree(trailCurrent->left);
 			else
 				DeleteFromTree(trailCurrent->right);
 		}
 	}
 }
-//*****************************************************************************
-// FUNCTION: 
-// DESCRIPTION: 
-// INPUT:
-// Parameters: 
-// File: 
-// OUTPUT:
-// Return Val: 
-// Parameters: 
-// CALLS TO: 
-//*****************************************************************************
 
+//*****************************************************************************
+// FUNCTION:FreeNodes 
+// DESCRIPTION: ~recursivley calls DeleteFromTree deleting all the nodes
+// INPUT: 
+// Parameters: BsTree* &myTree
+// CALLS TO DeleteFromTree(), FreeNodes()
+//*****************************************************************************
 void FreeNodes(BsTree* &myTree)
 {
-	if (!isEmpty(myTree))
+	if (!isEmpty(myTree)) //If tree not empty make it so
 	{
 		DeleteFromTree(myTree->root);
 		FreeNodes(myTree);
 	}
 }
-//*****************************************************************************
-// FUNCTION: 
-// DESCRIPTION: 
-// INPUT:
-// Parameters: 
-// File: 
-// OUTPUT:
-// Return Val: 
-// Parameters: 
-// CALLS TO: 
-//*****************************************************************************
 
+//*****************************************************************************
+// FUNCTION:DestroyTree
+// DESCRIPTION: De-allocates memory reserved for tree
+// INPUT:
+// Parameters: BsTree* &myTree ~ Tree to destroy
+//*****************************************************************************
 void DestroyTree(BsTree* &myTree)
 {
-	if (isEmpty(myTree))
+	if (isEmpty(myTree)) //If the tree is empty
 	{
 		myTree->root = NULL;
 		myTree->count = 0;
@@ -419,23 +413,16 @@ void DestroyTree(BsTree* &myTree)
 		cout << "\nPlease free the nodes before destroying the tree!\n";
 	}
 }
-//*****************************************************************************
-// FUNCTION: 
-// DESCRIPTION: 
-// INPUT:
-// Parameters: 
-// File: 
-// OUTPUT:
-// Return Val: 
-// Parameters: 
-// CALLS TO: 
-//*****************************************************************************
 
+//*****************************************************************************
+// FUNCTION: getFile
+// DESCRIPTION: gets the file name to process from the user
+// OUTPUT:
+// Return Val: string userInput ~ validated filename from user
+//*****************************************************************************
 string getFile()
 {
-	//Fix this shit
-	ifstream inStream;
-
+	ifstream inStream; 
 	bool isValid = false;
 	string userInput;
 
@@ -452,35 +439,33 @@ string getFile()
 		{
 			cout << "\nFile Not Found\n";
 			isValid = false;
-
 		}
 	}
 	return userInput;
 }
-//*****************************************************************************
-// FUNCTION: 
-// DESCRIPTION: 
-// INPUT:
-// Parameters: 
-// File: 
-// OUTPUT:
-// Return Val: 
-// Parameters: 
-// CALLS TO: 
-//*****************************************************************************
 
+//*****************************************************************************
+// FUNCTION: ProcessFile
+// DESCRIPTION: Loads the integers found in file in tree
+// INPUT:
+// Parameters: string fileName ~ validated file name
+// File: space delimited integers
+// CALLS TO: FindNode(),InsertNode(),
+//*****************************************************************************
 void ProcessFile(string fileName, BsTree* &myTree)
 {
 	BstNode* srchNode = NULL;
-
 	int numRead = EMPTY_FILE;
+
 	ifstream inStream;
 	inStream.open(fileName.c_str());
 	inStream >> numRead;
 	bool nodeFound = false;
+	
 	if (numRead != EMPTY_FILE)
 	{
-		do
+		//Load the unique integers into the tree 
+		do 
 		{
 			srchNode = FindNode(numRead, myTree->root, nodeFound);
 			if (nodeFound)
@@ -490,52 +475,42 @@ void ProcessFile(string fileName, BsTree* &myTree)
 				myTree->root = InsertNode(myTree->root, numRead);
 				myTree->count++;
 			}
-
-
 		} while (inStream >> numRead);
 	}
 }
 
 //*****************************************************************************
-// FUNCTION: 
-// DESCRIPTION: 
+// FUNCTION: isValid
+// DESCRIPTION: ~ returns true/false if passed user input is valid, and if true
+//				  passes the MENU_CHOICE associated with the char
 // INPUT:
-// Parameters: 
-// File: 
+// Parameters: char userInput ~ passed user input to be validated
 // OUTPUT:
-// Return Val: 
-// Parameters: 
-// CALLS TO: 
+// Return Val: valid ~ whether input is valid or not
 //*****************************************************************************
-
 bool isValid(char userInput, MENU_CHOICE* myChoice)
 {
 	bool valid = false;
-	for (int a = 0; a <= NUM_CHOICES - 1; a++)
+	for (int a = 0; a <= NUM_CHOICES - 1; a++) //Loop through menu arrays
 	{
-		if (userInput == CHAR_CHOICES[a])
+		if (userInput == CHAR_CHOICES[a]) 
 		{
 			valid = true;
-			*myChoice = static_cast<MENU_CHOICE>(a);
+			*myChoice = static_cast<MENU_CHOICE>(a); //set the menu choice
 		}
-			
 	}
 	if (!valid)
 		cout << "Please make a valid selection\n";
 	return valid;
 }
-//*****************************************************************************
-// FUNCTION: 
-// DESCRIPTION: 
-// INPUT:
-// Parameters: 
-// File: 
-// OUTPUT:
-// Return Val: 
-// Parameters: 
-// CALLS TO: 
-//*****************************************************************************
 
+//*****************************************************************************
+// FUNCTION: getMenuChoice
+// DESCRIPTION: get the input from user
+// OUTPUT:
+// Return Val: MENU_CHOICE myChoice ~ validated user choice.
+// CALLS TO: isValid
+//*****************************************************************************
 MENU_CHOICE getMenuChoice()
 {
 	char userInput;
@@ -545,49 +520,40 @@ MENU_CHOICE getMenuChoice()
 		cout << "Please make a selection: ";
 		cin >> userInput;
 		userInput = toupper(userInput);
-	}while (!isValid(userInput,&myChoice));
-	
+	} while (!isValid(userInput, &myChoice));
+
 	return myChoice;
 }
-//*****************************************************************************
-// FUNCTION: 
-// DESCRIPTION: 
-// INPUT:
-// Parameters: 
-// File: 
-// OUTPUT:
-// Return Val: 
-// Parameters: 
-// CALLS TO: 
-//*****************************************************************************
 
+//*****************************************************************************
+// FUNCTION: ShowMenu
+// DESCRIPTION: Shows the menu to the user
+// INPUT:
+// Parameters: int numNodes ~ number of nodes in tree
+//*****************************************************************************
 void ShowMenu(int numNodes)
 {
 	MENU_CHOICE myChoice = EXIT;
 	cout << endl << setw(28) << numNodes << " total nodes in tree\n";
 	cout << setw(0) << MENU_HDR;
-	
-	for (int a = 0; a <= NUM_CHOICES - 1; a++)
+
+	for (int a = 0; a <= NUM_CHOICES - 1; a++) //loop through constant string array
 		cout << setw(30) << CHAR_CHOICES[a] << "->" << STRING_CHOICES[a] << endl;
 }
 
 //*****************************************************************************
-// FUNCTION: 
-// DESCRIPTION: 
+// FUNCTION: showTree
+// DESCRIPTION: Shows the entire binary tree starting with the root of myTree
 // INPUT:
-// Parameters: 
-// File: 
-// OUTPUT:
-// Return Val: 
-// Parameters: 
-// CALLS TO: 
+// Parameters: BsTree* myTree
+// CALLS TO: InOrderDisplay
 //*****************************************************************************
 
 void showTree(BsTree* myTree)
 {
 	if (!isEmpty(myTree))
 	{
-		int numCols = 0;
+		int numCols = 0; //For column formatting
 		cout << "\nValues Stored in entire binary tree are:\n";
 		InOrderDisplay(myTree->root, numCols);
 		cout << endl;
@@ -597,17 +563,11 @@ void showTree(BsTree* myTree)
 }
 
 //*****************************************************************************
-// FUNCTION: 
-// DESCRIPTION: 
-// INPUT:
-// Parameters: 
-// File: 
+// FUNCTION: getNumToMod
+// DESCRIPTION: Gets the integer to add,delete, or search
 // OUTPUT:
-// Return Val: 
-// Parameters: 
-// CALLS TO: 
+// Return Val: int userInput
 //*****************************************************************************
-
 int getNumToMod()
 {
 	int userInput = 0;
@@ -621,23 +581,22 @@ int getNumToMod()
 		else
 			cout << "\nPlease enter an POSITIVE integer\n";
 	}
-	
 	return userInput;
 }
 
 //*****************************************************************************
-// FUNCTION: 
-// DESCRIPTION: 
+// FUNCTION: processChoice
+// DESCRIPTION: ~process's the menu choice from the user
 // INPUT:
-// Parameters: 
-// File: 
+// Parameters: MENU_CHOICE myChoice ~ choice passed from user
+//			   BsTree* &myTree ~ Tree to be modified
 // OUTPUT:
 // Return Val: 
-// Parameters: 
-// CALLS TO: 
+// Parameters: BsTree* &myTree ~ Modified tree
+// CALLS TO: getNumToMod(),FindNode(),InsertNode,showTree(),DeleteNode(),
+//			 FindNode(),InOrderDisplay()
 //*****************************************************************************
-
-void processChoice(MENU_CHOICE myChoice,BsTree* &myTree)
+void processChoice(MENU_CHOICE myChoice, BsTree* &myTree)
 {
 	BstNode* tmpNode = NULL;
 	int numToAdd = 0;
@@ -650,11 +609,11 @@ void processChoice(MENU_CHOICE myChoice,BsTree* &myTree)
 	{
 	case SHOW:
 		showTree(myTree);
-		
+
 		break;
 	case ADD:
 		numToAdd = getNumToMod();
-		FindNode(numToAdd, myTree->root, numFound); 
+		FindNode(numToAdd, myTree->root, numFound);
 		if (!numFound)
 		{
 			myTree->root = InsertNode(myTree->root, numToAdd);
@@ -685,13 +644,14 @@ void processChoice(MENU_CHOICE myChoice,BsTree* &myTree)
 		tmpNode = FindNode(numToFind, myTree->root, numFound);
 		if (numFound)
 		{
-			cout << "\nValues stored in subtree with  " << numToFind  << " as root " << endl;
+			cout << "\nValues stored in subtree with  " << numToFind << " as root " << endl;
 			InOrderDisplay(tmpNode, numItems);
 
 		}
 		break;
-		
+
 	case EXIT:
+		//Did I do this right??
 		FreeNodes(myTree);
 		DestroyTree(myTree);
 		cout << "Good-Bye\n";
@@ -699,18 +659,15 @@ void processChoice(MENU_CHOICE myChoice,BsTree* &myTree)
 	}
 
 }
-//*****************************************************************************
-// FUNCTION: 
-// DESCRIPTION: 
-// INPUT:
-// Parameters: 
-// File: 
-// OUTPUT:
-// Return Val: 
-// Parameters: 
-// CALLS TO: 
-//*****************************************************************************
 
+//*****************************************************************************
+// FUNCTION: isEmpty
+// DESCRIPTION: returns true/false if tree is empty, (root pointer == NULL)
+// INPUT:
+// Parameters: BsTree* myTree
+// OUTPUT:
+// Return Val: isEmpty ~ tree empty or not
+//*****************************************************************************
 bool isEmpty(BsTree* myTree)
 {
 	bool isEmpty = false;
